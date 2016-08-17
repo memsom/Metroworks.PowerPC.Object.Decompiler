@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mwobdc", "mwobdc\mwobdc.csproj", "{D863504F-BF8C-4429-8775-9A0975C6E63D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mwobdc.Common", "mwobdc.Common\mwobdc.Common.csproj", "{A8506E94-4B77-455A-B678-C8EC2E5B7C5E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D863504F-BF8C-4429-8775-9A0975C6E63D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D863504F-BF8C-4429-8775-9A0975C6E63D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D863504F-BF8C-4429-8775-9A0975C6E63D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8506E94-4B77-455A-B678-C8EC2E5B7C5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8506E94-4B77-455A-B678-C8EC2E5B7C5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8506E94-4B77-455A-B678-C8EC2E5B7C5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8506E94-4B77-455A-B678-C8EC2E5B7C5E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
