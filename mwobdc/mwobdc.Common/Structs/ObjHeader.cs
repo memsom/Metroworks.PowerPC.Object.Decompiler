@@ -40,6 +40,26 @@ namespace mwobdc.Common.Structs
         Int32 reserved_12;
     }
 
+    public enum ObjectFlag
+    {
+        ObjIsSharedLib = 0x0001,
+        ObjIsLib = 0x0002,
+        ObjIsPascal = 0x0004,
+        ObjIsWeak = 0x0008,
+        ObjIsInitBefore = 0x0010
+    }
+
+    public class ObjHeaderEx
+    {
+        public ObjHeader Value;
+
+        public bool IsSharedLib { get { return Value.FlagIsSet(ObjectFlag.ObjIsSharedLib); } }
+        public bool IsLib { get { return Value.FlagIsSet(ObjectFlag.ObjIsLib); } }
+        public bool IsPascal { get { return Value.FlagIsSet(ObjectFlag.ObjIsPascal); } }
+        public bool IsWeak { get { return Value.FlagIsSet(ObjectFlag.ObjIsWeak); } }
+        public bool IsInitBefore { get { return Value.FlagIsSet(ObjectFlag.ObjIsInitBefore); } }
+    }
+
     public static class ObjHeaderHelper
     {
         public static string[] LiteralGetObjectNameTable(ObjHeader oh, byte[] oa)
@@ -63,23 +83,32 @@ namespace mwobdc.Common.Structs
             return result.ToArray();
         }
 
-        [Obsolete]
-        public static string[] GetObjectNameTable(ObjHeader oh, byte[] oa)
+        public static bool FlagIsSet(this ObjHeader oh,  ObjectFlag flag)
+        {
+            return oh.flags == (oh.flags | (Int16)flag);
+        }
+
+        /// <summary>
+        /// Creates an array of nameTableEntry, which contain the name table info for this object
+        /// </summary>
+        public static nameTableEntry[] GetObjectNameTable(this ObjHeader oh, byte[] oa)
         {
             var buffer = new StringBuilder();
-            var result = new List<string>();
+            var result = new List<nameTableEntry>();
 
             var ntoffset = Utils.SwapInt32(oh.nametable_offset);
             var ncount = Utils.SwapInt32(oh.nametable_names);
+            var coffset = ntoffset; //set it to start of name table for the first entry
 
             for (var i = ntoffset; i < oa.Length; i++)
             {
                 var eos = oa[i] == 0 && oa[i - 1] != 0;
                 if (eos)
                 {
-                    result.Add(buffer.ToString());
+                    result.Add(GetNameTableEntry(coffset, buffer));
                     buffer.Clear();
-                    ncount--;
+                    ncount--; //there should be the same number of entries as this count
+                    coffset = i; //start of the entry
                 }
                 else
                 {
@@ -87,9 +116,24 @@ namespace mwobdc.Common.Structs
                 }
             }
 
-            result.Add(buffer.ToString());
+            //ignore anything outside of the last entry as this is probably padding (??)
 
             return result.ToArray();
+        }
+
+        public static nameTableEntry GetNameTableEntry(int offsetValue, StringBuilder buffer)
+        {
+            var cs = new CheckSum();
+            cs.highByte = (byte)buffer[0];
+            cs.lowByte = (byte)buffer[1];
+            buffer.Remove(0, 2);
+            var nameValue = buffer.ToString();
+            var csValue = MWHashUtils.CHash(nameValue);
+
+            //System.Diagnostics.Debug.Assert(csValue == cs.value, $"Checksum failed.. expected {csValue.ToString("x")} got {cs.value.ToString("x")}");
+
+            return new nameTableEntry { name = nameValue, check_sum = csValue, validated = csValue == cs.value, offset = offsetValue };
+
         }
     }
 }

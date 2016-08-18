@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using mwobdc.Common;
 using mwobdc.Common.Structs;
+using System.Runtime.InteropServices;
 
 namespace mwobdc
 {
@@ -47,7 +48,7 @@ namespace mwobdc
 
                         Console.WriteLine($"\tLibFile {i}\r\n\t\tmoddate {Utils.ToDateTime(UC(libFile.moddate))}\r\n\t\tfilename (offset) {C(libFile.filename)} : {libFileEx.FileName}\r\n\t\tfullpathname (offset) {C(libFile.fullpathname)} : {libFileEx.FullPathName}\r\n\t\tobjectstart {C(libFile.objectstart)}\r\n\t\tobjectsize {C(libFile.objectsize)}");
 
-                        Console.WriteLine($"\t\t\tObjHeader\r\n\t\t\t\tmagic_word {C(libFileEx.ObjectHeader.magic_word).ToString("X")}\r\n\t\t\t\t...");
+                        Console.WriteLine($"\t\t\tObjHeader\r\n\t\t\t\tmagic_word {C(libFileEx.ObjectHeader.Value.magic_word).ToString("X")}\r\n\t\t\t\t...");
 
                         //dump the objects to files... this makes working out the contents simpler
                         Utils.DumpObject(libFileEx.FileName + ".DUMP.txt", libFileEx.Object);
@@ -58,8 +59,10 @@ namespace mwobdc
                         foreach(var nte in ont)
                         {
                             var valid = nte.validated ? "+" : "-";
-                            Console.WriteLine($"\t\t\t\t\t{nte.name} : {nte.check_sum.ToString("x")} [{valid}]");
+                            Console.WriteLine($"\t\t\t\t\t{nte.offset.ToString("x")}:: {nte.name} {nte.check_sum.ToString("x")}[{valid}]");
                         }
+
+                        Utils.DumpObjectContents(libFileEx.FileName, libFileEx.Object); //, Marshal.SizeOf(typeof(ObjHeader)));
 
                         libFiles.Add(libFileEx);
                     }

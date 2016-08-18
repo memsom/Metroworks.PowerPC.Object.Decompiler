@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MWHashUtils.cs" />
+    <Compile Include="Structs\Hunk.cs" />
     <Compile Include="Structs\LibFile.cs" />
     <Compile Include="Structs\LibHeader.cs" />
     <Compile Include="Structs\ObjHeader.cs" />

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using mwobdc.Common.Structs;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -108,6 +109,90 @@ namespace mwobdc.Common
                 }
 
                 f.Close();
+            }
+        }
+
+        public static void DumpObjectContents(string baseFileName, byte[] objectData)
+        {
+
+            var size = 0;
+            var position = 0;
+
+            DumpObjHeader(baseFileName, objectData, out size, out position);
+
+            DumpHunkStart(baseFileName, objectData, ref size, ref position);
+
+            DumpHunkData(baseFileName, objectData, position);
+
+        }
+
+        static void DumpHunkData(string baseFileName, byte[] objectData, int position)
+        {
+            using (var reader = new BinaryReader(new MemoryStream(objectData)))
+            {
+                var fileName = baseFileName + ".DUMP__HunkData.txt";
+
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                using (var writer = new BinaryWriter(File.Create(fileName)))
+                {
+                    reader.BaseStream.Position = position;
+                    while (reader.BaseStream.Position < reader.BaseStream.Length)
+                    {
+                        writer.Write(reader.ReadByte());
+                    }
+                }
+            }
+        }
+
+        //dumps the hunk start data - which is 4 bytes, but hey - VALIDATION!!
+        static void DumpHunkStart(string baseFileName, byte[] objectData, ref int size, ref int position)
+        {
+            using (var reader = new MemoryStream(objectData))
+            {
+                var fileName = baseFileName + ".DUMP__HunkStart.txt";
+
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                using (var writer = new BinaryWriter(File.Create(fileName)))
+                {
+                    size = Marshal.SizeOf(typeof(ObjMiscHunk));
+                    var buffer = new byte[size];
+                    reader.Seek(position, SeekOrigin.Begin);
+                    position += reader.Read(buffer, 0, size);
+                    writer.Write(buffer);
+                    writer.Close();
+                }
+            }
+        }
+
+        static void DumpObjHeader(string baseFileName, byte[] objectData, out int size, out int position)
+        {
+            using (var reader = new BinaryReader(new MemoryStream(objectData)))
+            {
+                var fileName = baseFileName + ".DUMP__ObjHeader.txt";
+
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                position = 0;
+
+                using (var writer = new BinaryWriter(File.Create(fileName)))
+                {
+                    size = Marshal.SizeOf(typeof(ObjHeader));
+                    var buffer = new byte[size];
+                    position = reader.Read(buffer, position, size);
+                    writer.Write(buffer);
+                    writer.Close();
+                }
             }
         }
     }

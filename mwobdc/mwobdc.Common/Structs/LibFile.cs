@@ -18,9 +18,10 @@ namespace mwobdc.Common.Structs
 
     public struct nameTableEntry
     {
-        public string name;
-        public Int16 check_sum;
-        public bool validated;
+        public string name; //the name in the name table
+        public Int16 check_sum; //the check_sum value calculated using MWHashUtile.CHash(..)
+        public bool validated; //was the check_sum validated for this entry (i.e. when we read this record, did we re-compute it and compare this value to it)
+        public Int32 offset; //offset with in the object
     }
 
     public class LibFileEx
@@ -29,7 +30,14 @@ namespace mwobdc.Common.Structs
         public string FileName { get; set; }
         public string FullPathName { get; set; }
         public byte[] Object { get; set; }
-        public ObjHeader ObjectHeader { get { return GetObjectHeader(); } }
+        //TODO: make this not inline
+        public ObjHeaderEx ObjectHeader
+        {
+            get
+            {
+                return new ObjHeaderEx { Value = GetObjectHeader() };
+            }
+        }
 
         ObjHeader GetObjectHeader()
         {
@@ -44,52 +52,8 @@ namespace mwobdc.Common.Structs
 
         public nameTableEntry[] ObjectNameTable
         {
-            get { return GetObjectNameTable(ObjectHeader, Object); }
-        }
-
-        nameTableEntry[] GetObjectNameTable(ObjHeader oh, byte[] oa)
-        {
-            var buffer = new StringBuilder();
-            var result = new List<nameTableEntry>();
-
-            var ntoffset = Utils.SwapInt32(oh.nametable_offset);
-            var ncount = Utils.SwapInt32(oh.nametable_names);
-
-            for (var i = ntoffset; i < oa.Length; i++)
-            {
-                var eos = oa[i] == 0 && oa[i - 1] != 0;
-                if (eos)
-                {
-                    result.Add(GetNameTableEntry(buffer));
-                    buffer.Clear();
-                    ncount--;
-                }
-                else
-                {
-                    buffer.Append((char)oa[i]);
-                }
-            }
-
-            //if (buffer.Length > 0)
-            //    result.Add(GetNameTableEntry(buffer));
-
-            return result.ToArray();
-        }
-
-        nameTableEntry GetNameTableEntry(StringBuilder buffer)
-        {
-            var cs = new CheckSum();
-            cs.highByte = (byte)buffer[0];
-            cs.lowByte = (byte)buffer[1];
-            buffer.Remove(0, 2);
-            var nameValue = buffer.ToString();
-            var csValue = MWHashUtils.CHash(nameValue);
-
-            //System.Diagnostics.Debug.Assert(csValue == cs.value, $"Checksum failed.. expected {csValue.ToString("x")} got {cs.value.ToString("x")}");
-
-            return new nameTableEntry { name = nameValue, check_sum = csValue, validated = csValue == cs.value };
-
-        }
+            get { return (ObjectHeader.Value.GetObjectNameTable(Object)); }
+        }        
     }
 
     public static class LibFileHelper
