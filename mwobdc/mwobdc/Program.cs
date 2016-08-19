@@ -62,7 +62,7 @@ namespace mwobdc
                             Console.WriteLine($"\t\t\t\t\t{nte.offset.ToString("x")}:: {nte.name} {nte.check_sum.ToString("x")}[{valid}]");
                         }
 
-                        Utils.DumpObjectContents(libFileEx.FileName, libFileEx.Object); //, Marshal.SizeOf(typeof(ObjHeader)));
+                        Utils.DumpObjectContents(libFileEx.FileName, libFileEx.Object, libFileEx.ObjectNameTable); //, Marshal.SizeOf(typeof(ObjHeader)));
 
                         libFiles.Add(libFileEx);
                     }

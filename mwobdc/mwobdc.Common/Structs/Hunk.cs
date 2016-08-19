@@ -37,21 +37,36 @@ namespace mwobdc.Common.Structs
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ObjPeekHunk
+    {
+        public Int16 hunk_type;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct ObjMiscHunk
     {
-        Int16 hunk_type;
-        Int16 unused; //Padding
+        public Int16 hunk_type;
+        public Int16 unused; //Padding
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct ObjCodeHunk
     {
-        Int16 hunk_type;
-        SByte sm_class;
-        Byte x;
-        Int32 name_id;
-        Int32 size;
-        Int32 sym_offset;
-        Int32 sym_decl_offset;
+        public Int16 hunk_type;
+        public SByte sm_class;
+        public Byte x;
+        public Int32 name_id;
+        public Int32 size;
+        public Int32 sym_offset;
+        public Int32 sym_decl_offset;
+    }
+
+    /// <summary>
+    /// These represent the only valid values for ObjCodeHunk.sm_class
+    /// </summary>
+    public static class PowerPCConsts
+    {
+        public const sbyte XMC_PR = 0;
+        public const sbyte XMC_GL = 6;
     }
 }
