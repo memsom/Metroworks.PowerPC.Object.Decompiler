@@ -62,11 +62,36 @@ namespace mwobdc.Common.Structs
     }
 
     /// <summary>
+    /// Okay - can you see the difference between ObjCodeHunk and ObjDataHunk?! Yeah.. one field name...
+    /// Legacy code is simply weird and awesome.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ObjDataHunk
+    {
+        public Int16 hunk_type;
+        public SByte sm_class;
+        public Byte x;
+        public Int32 name_id;
+        public Int32 size;
+        public Int32 sym_type_id;
+        public Int32 sym_decl_offset;
+    }
+
+    /// <summary>
     /// These represent the only valid values for ObjCodeHunk.sm_class
     /// </summary>
     public static class PowerPCConsts
     {
-        public const sbyte XMC_PR = 0;
-        public const sbyte XMC_GL = 6;
+        /* read only classes */
+        public const sbyte XMC_PR = 0;   //program code
+        public const sbyte XMC_RO = 1;   //read only constant
+        public const sbyte XMC_GL = 6;   //global linkage
+
+        /* read/write classes */
+        public const sbyte XMC_RW = 5;   //read write data
+        public const sbyte XMC_TC0 = 15; //TOC anchor
+        public const sbyte XMC_TC = 15;  //general TOC entry
+        public const sbyte XMC_TD = 15;  //scalar TOC data
+        public const sbyte XMC_DS = 10;  //routine descriptor
     }
 }

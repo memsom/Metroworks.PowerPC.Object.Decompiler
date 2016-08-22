@@ -141,9 +141,57 @@ namespace mwobdc.Common
                     position = DumpHunkGlobalCode(baseFileName, objectData, position, nameTable);
                     return true;
 
+                case Hunk.HUNK_GLOBAL_IDATA:
+                    position = DumpHunkGlobalIData(baseFileName, objectData, position, nameTable);
+                    return true;
+
                 default:
                     return false;
             }
+        }
+
+        static int DumpHunkGlobalIData(string baseFileName, byte[] objectData, int position, nameTableEntry[] nameTable)
+        {
+            //verify the data [Debug]
+            var hunk = ReadObjDataHunk(objectData, position);
+
+            //we know that there are some values that are constant...
+            System.Diagnostics.Debug.Assert(hunk.hunk_type == (Int16)Hunk.HUNK_GLOBAL_IDATA);
+            System.Diagnostics.Debug.Assert(
+                hunk.sm_class == PowerPCConsts.XMC_RO || 
+                hunk.sm_class == PowerPCConsts.XMC_RW ||
+                hunk.sm_class == PowerPCConsts.XMC_DS ||
+                hunk.sm_class == PowerPCConsts.XMC_TC ||
+                hunk.sm_class == PowerPCConsts.XMC_TD ||
+                hunk.sm_class == PowerPCConsts.XMC_TC0);
+
+            if (hunk.sym_type_id == 0x8000000)
+            {
+                System.Diagnostics.Debug.Assert(hunk.sym_decl_offset == 0);
+            }
+
+            var name = hunk.name_id - 1 >= 0 ? nameTable[hunk.name_id - 1].name : "none";
+
+            using (var reader = new MemoryStream(objectData))
+            {
+                var fileName = $"{baseFileName}.DUMP__GlobalIData_{name}.txt";
+
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                using (var writer = new BinaryWriter(File.Create(fileName)))
+                {
+                    var size = Marshal.SizeOf(typeof(ObjDataHunk));
+                    var buffer = new byte[size];
+                    reader.Seek(position, SeekOrigin.Begin);
+                    position += reader.Read(buffer, 0, size);
+                    writer.Write(buffer);
+                    writer.Close();
+                }
+            }
+            return DumpMachineCode($"{baseFileName}.DUMP__GlobalIData", objectData, hunk.size, position, name);
         }
 
         static int DumpHunkGlobalCode(string baseFileName, byte[] objectData, int position, nameTableEntry[] nameTable)
@@ -163,7 +211,7 @@ namespace mwobdc.Common
 
             using (var reader = new MemoryStream(objectData))
             {
-                var fileName = baseFileName + $".DUMP__GlobalCode_{name}.txt";
+                var fileName = $"{baseFileName}.DUMP__GlobalCode_{name}.txt";
 
                 if (File.Exists(fileName))
                 {
@@ -180,17 +228,17 @@ namespace mwobdc.Common
                     writer.Close();
                 }
             }
-            return DumpGlobalCode(baseFileName, objectData, hunk.size, position, name);
+            return DumpMachineCode($"{baseFileName}.DUMP__GlobalCode", objectData, hunk.size, position, name);
         }
 
         /// <summary>
         /// Dumps the raw machine code that follows the hunk header
         /// </summary>
-        static int DumpGlobalCode(string baseFileName, byte[] objectData, int size, int position, string name)
+        static int DumpMachineCode(string baseFileName, byte[] objectData, int size, int position, string name)
         {
             using (var reader = new MemoryStream(objectData))
             {
-                var fileName = baseFileName + $".DUMP__GlobalCode_{name}_MC.txt";
+                var fileName = $"{baseFileName}_{name}_MC.txt";
 
                 if (File.Exists(fileName))
                 {
@@ -213,7 +261,7 @@ namespace mwobdc.Common
         {
             using (var reader = new BinaryReader(new MemoryStream(objectData)))
             {
-                var fileName = baseFileName + ".DUMP__HunkData.txt";
+                var fileName = $"{baseFileName}.DUMP__HunkData.txt";
 
                 if (File.Exists(fileName))
                 {
@@ -236,7 +284,7 @@ namespace mwobdc.Common
         {
             using (var reader = new MemoryStream(objectData))
             {
-                var fileName = baseFileName + ".DUMP__HunkStart.txt";
+                var fileName = $"{baseFileName}.DUMP__HunkStart.txt";
 
                 if (File.Exists(fileName))
                 {
@@ -259,7 +307,7 @@ namespace mwobdc.Common
         {
             using (var reader = new BinaryReader(new MemoryStream(objectData)))
             {
-                var fileName = baseFileName + ".DUMP__ObjHeader.txt";
+                var fileName = $"{baseFileName}.DUMP__ObjHeader.txt";
 
                 if (File.Exists(fileName))
                 {
@@ -304,6 +352,23 @@ namespace mwobdc.Common
                 result.name_id = Utils.SwapInt32(result.name_id);
                 result.size = Utils.SwapInt32(result.size);
                 result.sym_offset = Utils.SwapInt32(result.sym_offset);
+                result.sym_decl_offset = Utils.SwapInt32(result.sym_decl_offset);
+
+                return result;
+            }
+        }
+
+        static ObjDataHunk ReadObjDataHunk(byte[] objectData, int position)
+        {
+            using (var reader = new BinaryReader(new MemoryStream(objectData)))
+            {
+                reader.BaseStream.Seek(position, SeekOrigin.Begin);
+                var result = Utils.Read<ObjDataHunk>(reader);
+                //pre-process the fields
+                result.hunk_type = Utils.SwapInt16(result.hunk_type);
+                result.name_id = Utils.SwapInt32(result.name_id);
+                result.size = Utils.SwapInt32(result.size);
+                result.sym_type_id = Utils.SwapInt32(result.sym_type_id);
                 result.sym_decl_offset = Utils.SwapInt32(result.sym_decl_offset);
 
                 return result;
