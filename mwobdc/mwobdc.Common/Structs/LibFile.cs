@@ -9,9 +9,9 @@ namespace mwobdc.Common.Structs
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct LibFile
     {
-        public UInt32 moddate;
+        public UInt32 moddate; //this seems to be from a different offset in BeOS
         public Int32 filename;
-        public Int32 fullpathname;
+        public Int32 fullpathname; //this seems to be set to 0 in BeOS - the filename is all that is stored
         public Int32 objectstart;
         public Int32 objectsize;
     }
@@ -28,7 +28,7 @@ namespace mwobdc.Common.Structs
     {
         public LibFile LibFile;
         public string FileName { get; set; }
-        public string FullPathName { get; set; }
+        public string FullPathName { get; set; } //BeOS doesn't seem to use this
         public byte[] Object { get; set; }
         //TODO: make this not inline
         public ObjHeaderEx ObjectHeader

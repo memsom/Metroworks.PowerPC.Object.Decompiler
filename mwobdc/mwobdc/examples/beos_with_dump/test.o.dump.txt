@@ -1,0 +1,20 @@
+
+
+======== BOWM CPP ========
+
+
+Names:
+	    1: .test
+	    2: test
+	    3: TOC
+
+Hunk:	Kind=HUNK_GLOBAL_CODE    Align=4  Class=PR  Name=".test"(1)  Size=8
+00000000: 3863000A  addi     r3,r3,10
+00000004: 4E800020  blr
+
+Hunk:	Kind=HUNK_GLOBAL_IDATA   Align=4  Class=DS  Name="test"(2)  Size=8
+00000000: 00 00 00 00 00 00 00 00                         '........'
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000000  Class=PR  Name=".test"(1)
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000004  Class=TC0 Name="TOC"(3)
+
+Hunk:	Kind=HUNK_GLOBAL_IDATA   Align=4  Class=TC0 Name="TOC"(3)  Size=0

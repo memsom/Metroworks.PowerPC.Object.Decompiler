@@ -21,7 +21,8 @@ namespace mwobdc
 
         static void Main(string[] args)
         {
-            using (var fs = new FileStream("mslstdrt.o", FileMode.Open))
+            //using (var fs = new FileStream("mslstdrt.o", FileMode.Open))
+            using (var fs = new FileStream("start_dyn.o", FileMode.Open))
             {
                 using (var file = new BinaryReader(fs))
                 {
@@ -42,7 +43,7 @@ namespace mwobdc
                         {
                             LibFile = libFile,
                             FileName = libFile.GetFileName(file),
-                            FullPathName = libFile.GetFullPathName(file),
+                            FullPathName = libFile.GetFullPathName(file), //for BeOS, this seems to be 0 (zero)... I think they left out the redundant extra name
                             Object = libFile.GetObject(file)
                         };
 
@@ -51,7 +52,7 @@ namespace mwobdc
                         Console.WriteLine($"\t\t\tObjHeader\r\n\t\t\t\tmagic_word {C(libFileEx.ObjectHeader.Value.magic_word).ToString("X")}\r\n\t\t\t\t...");
 
                         //dump the objects to files... this makes working out the contents simpler
-                        Utils.DumpObject(libFileEx.FileName + ".DUMP.txt", libFileEx.Object);
+                        Utils.DumpObject(libFileEx.FileName.Replace('/', '+') + ".DUMP.txt", libFileEx.Object);
 
                         //grab the name table
                         Console.WriteLine($"\t\t\t\tNameTable");
@@ -62,7 +63,7 @@ namespace mwobdc
                             Console.WriteLine($"\t\t\t\t\t{nte.offset.ToString("x")}:: {nte.name} {nte.check_sum.ToString("x")}[{valid}]");
                         }
 
-                        Utils.DumpObjectContents(libFileEx.FileName, libFileEx.Object, libFileEx.ObjectNameTable); //, Marshal.SizeOf(typeof(ObjHeader)));
+                        Utils.DumpObjectContents(libFileEx.FileName.Replace('/', '+'), libFileEx.Object, libFileEx.ObjectNameTable); //, Marshal.SizeOf(typeof(ObjHeader)));
 
                         libFiles.Add(libFileEx);
                     }
