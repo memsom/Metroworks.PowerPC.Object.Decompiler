@@ -9,7 +9,7 @@ namespace mwobdc.Common.Structs
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct LibFile
     {
-        public UInt32 moddate; //this seems to be from a different offset in BeOS
+        public UInt32 moddate; //this seems to be from a different offset in BeOS.. might actually be unused. Compiling under Haiku with cross compiler gave a value of 0.
         public Int32 filename;
         public Int32 fullpathname; //this seems to be set to 0 in BeOS - the filename is all that is stored
         public Int32 objectstart;
@@ -60,12 +60,18 @@ namespace mwobdc.Common.Structs
     {
         public static string GetFullPathName(this LibFile libFile, BinaryReader file)
         {
-            return Utils.GetString(file, Utils.SwapInt32(libFile.fullpathname));
+            if (libFile.fullpathname > 0)
+                return Utils.GetString(file, Utils.SwapInt32(libFile.fullpathname));
+            else
+                return string.Empty;
         }
 
         public static string GetFileName(this LibFile libFile, BinaryReader file)
         {
-            return Utils.GetString(file, Utils.SwapInt32(libFile.filename));
+            if (libFile.filename > 0)
+                return Utils.GetString(file, Utils.SwapInt32(libFile.filename));
+            else
+                return string.Empty;
         }
 
         public static byte[] GetObject(this LibFile libFile, BinaryReader file)

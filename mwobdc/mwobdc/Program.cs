@@ -22,7 +22,8 @@ namespace mwobdc
         static void Main(string[] args)
         {
             //using (var fs = new FileStream("mslstdrt.o", FileMode.Open))
-            using (var fs = new FileStream("start_dyn.o", FileMode.Open))
+            //using (var fs = new FileStream("start_dyn.o", FileMode.Open))
+            using (var fs = new FileStream("test.o", FileMode.Open))
             {
                 using (var file = new BinaryReader(fs))
                 {
@@ -57,7 +58,7 @@ namespace mwobdc
                         //grab the name table
                         Console.WriteLine($"\t\t\t\tNameTable");
                         var ont = libFileEx.ObjectNameTable;
-                        foreach(var nte in ont)
+                        foreach (var nte in ont)
                         {
                             var valid = nte.validated ? "+" : "-";
                             Console.WriteLine($"\t\t\t\t\t{nte.offset.ToString("x")}:: {nte.name} {nte.check_sum.ToString("x")}[{valid}]");
