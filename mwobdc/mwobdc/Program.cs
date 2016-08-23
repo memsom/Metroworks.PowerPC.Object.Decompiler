@@ -22,14 +22,74 @@ namespace mwobdc
         static void Main(string[] args)
         {
             //this is still not really generic enough.
-            DumpObjectFile("test.o");
-            DumpObjectFile("start_dyn.o");
-            DumpObjectFile("mslstdrt.o");
+            DumpObjectFile("test.o"); //simple one function test (see examples for the code)
+            DumpObjectFile("start_dyn.o"); //standard BeOS PowerPC object file
+            DumpObjectFile("init_term_dyn.o"); //standard BeOS PowerPC object file
+            DumpObjectFile("mslstdrt.o");  //standard Mac CodeWarrior Library (renamed as it was stupidly long)
+
+            DumpArchiveFile("libfl.a");
 
             Console.ReadLine();
         }
 
-        private static void DumpObjectFile(string objectFile)
+        //dumps the contents of an archive in to multiple object files, then dumps those objects
+        static void DumpArchiveFile(string archiveFile)
+        {
+            using (var fs = new FileStream(archiveFile, FileMode.Open))
+            {
+                using (var file = new BinaryReader(fs))
+                {
+                    var mwobLibHeader = Utils.Read<LibHeader>(file);
+
+                    var files = C(mwobLibHeader.nobjectfiles); //number of objects in this archive
+
+                    //this is a hunch... the hex looks like the format is something like this:
+                    // LibHeader
+                    //   Libfile1
+                    //   ...
+                    //   LibFileN
+                    //   NameTable
+                    //The LibHeader.nobjects indicates how many Libfile entries there are.
+                    //The nametable follows directly on from the LibFiles.
+
+                    var libfiles = new Dictionary<string, LibFile>();
+                    for (int i = 0; i < files; i++)
+                    {
+
+                        var libFile = Utils.Read<LibFile>(file);
+                        
+                        libfiles.Add(libFile.GetFileName(file), libFile);
+                    }
+
+                    //okay - could do this inline, but split out to make debugging simpler.
+                    foreach(var kvp in libfiles)
+                    {
+                        var libFile = kvp.Value;
+                        var pos = C(libFile.objectstart);
+                        var size = C(libFile.objectsize);
+
+                        if(File.Exists(kvp.Key))
+                        {
+                            File.Delete(kvp.Key);
+                        }
+
+                        using (var writer = new BinaryWriter(File.Create(kvp.Key)))
+                        {
+                            file.BaseStream.Position = pos;
+                            var buffer = new byte[size];
+                            file.Read(buffer, 0, size);
+                            writer.Write(buffer);
+                            writer.Close();
+                        }
+
+                        DumpObjectFile(kvp.Key);
+                    }
+                }
+            }
+        }
+
+        //dumps the contents of an individual object file
+        static void DumpObjectFile(string objectFile)
         {
             using (var fs = new FileStream(objectFile, FileMode.Open))
             {
