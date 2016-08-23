@@ -21,9 +21,17 @@ namespace mwobdc
 
         static void Main(string[] args)
         {
-            //using (var fs = new FileStream("mslstdrt.o", FileMode.Open))
-            //using (var fs = new FileStream("start_dyn.o", FileMode.Open))
-            using (var fs = new FileStream("test.o", FileMode.Open))
+            //this is still not really generic enough.
+            DumpObjectFile("test.o");
+            DumpObjectFile("start_dyn.o");
+            DumpObjectFile("mslstdrt.o");
+
+            Console.ReadLine();
+        }
+
+        private static void DumpObjectFile(string objectFile)
+        {
+            using (var fs = new FileStream(objectFile, FileMode.Open))
             {
                 using (var file = new BinaryReader(fs))
                 {
@@ -74,8 +82,6 @@ namespace mwobdc
 
                 fs.Close();
             }
-
-            Console.ReadLine();
         }
     }
 }

@@ -78,6 +78,31 @@ namespace mwobdc.Common.Structs
     }
 
     /// <summary>
+    /// Okay - can you see the difference between ObjCodeHunk and ObjDataHunk?! Yeah.. one field name...
+    /// Legacy code is simply weird and awesome.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ObjEntryHunk
+    {
+        public Int16 hunk_type;
+        public Int16 unused;
+        public Int32 name_id;
+        public Int32 offset;
+        public Int32 sym_type_id;
+        public Int32 sym_decl_offset;
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    public struct ObjXRefHunk
+    {
+        public Int16 hunk_type;
+        public SByte sm_class;
+        public Byte unused;
+        public Int32 name_id;
+        public Int32 offset;
+    }
+
+    /// <summary>
     /// These represent the only valid values for ObjCodeHunk.sm_class
     /// </summary>
     public static class PowerPCConsts
@@ -90,8 +115,11 @@ namespace mwobdc.Common.Structs
         /* read/write classes */
         public const sbyte XMC_RW = 5;   //read write data
         public const sbyte XMC_TC0 = 15; //TOC anchor
-        public const sbyte XMC_TC = 15;  //general TOC entry
-        public const sbyte XMC_TD = 15;  //scalar TOC data
+        public const sbyte XMC_TC = 3;  //general TOC entry
+        public const sbyte XMC_TD = 16;  //scalar TOC data
         public const sbyte XMC_DS = 10;  //routine descriptor
+
+        /* possible BeOS specific */
+        public const sbyte XMC_UNK = 12; //this seems to be a BeOS specific value...not in the original Spec.
     }
 }
