@@ -100,14 +100,26 @@ namespace mwobdc.Common.Structs
             var ncount = Utils.SwapInt32(oh.nametable_names);
             var coffset = ntoffset; //set it to start of name table for the first entry
 
-            for (var i = ntoffset; i < oa.Length; i++)
+            var found = 0;
+
+            CheckSum cs = new CheckSum { highByte = oa[ntoffset], lowByte = oa[ntoffset + 1] };
+
+            for (var i = ntoffset + 2; i < oa.Length; i++)
             {
-                var eos = oa[i] == 0 && oa[i - 1] != 0;
+                var eos = (oa[i] == 0 && oa[i - 1] != 0);
                 if (eos)
                 {
-                    result.Add(GetNameTableEntry(coffset, buffer));
+                    found++;
+                    result.Add(GetNameTableEntry(coffset, buffer, cs));
                     buffer.Clear();
                     ncount--; //there should be the same number of entries as this count
+                    i += 2;
+
+                    //I think we get more names reported than actually exist...
+                    if (i < oa.Length)
+                    {
+                        cs = new CheckSum { highByte = oa[i - 1], lowByte = oa[i] };
+                    }
                     coffset = i; //start of the entry
                 }
                 else
@@ -121,12 +133,8 @@ namespace mwobdc.Common.Structs
             return result.ToArray();
         }
 
-        public static nameTableEntry GetNameTableEntry(int offsetValue, StringBuilder buffer)
+        public static nameTableEntry GetNameTableEntry(int offsetValue, StringBuilder buffer, CheckSum cs)
         {
-            var cs = new CheckSum();
-            cs.highByte = (byte)buffer[0];
-            cs.lowByte = (byte)buffer[1];
-            buffer.Remove(0, 2);
             var nameValue = buffer.ToString();
             var csValue = MWHashUtils.CHash(nameValue);
 

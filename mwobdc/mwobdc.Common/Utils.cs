@@ -188,7 +188,7 @@ namespace mwobdc.Common
 
             using (var reader = new MemoryStream(objectData))
             {
-                var fileName = $"{baseFileName}.DUMP__{type}_{name}.txt";
+                var fileName = $"{baseFileName}Dir{Path.DirectorySeparatorChar}{type}_{name}.bin".Replace('<', '+').Replace('>', '+').Replace('/', '+');
 
                 if (File.Exists(fileName))
                 {
@@ -226,7 +226,7 @@ namespace mwobdc.Common
 
             using (var reader = new MemoryStream(objectData))
             {
-                var fileName = $"{baseFileName}.DUMP__{type}_{name}.txt";
+                var fileName = $"{baseFileName}Dir{Path.DirectorySeparatorChar}{type}_{name}.bin".Replace('<', '+').Replace('>', '+').Replace('/', '+');
 
                 if (File.Exists(fileName))
                 {
@@ -263,7 +263,8 @@ namespace mwobdc.Common
                 hunk.sm_class == PowerPCConsts.XMC_TC ||
                 hunk.sm_class == PowerPCConsts.XMC_TD ||
                 hunk.sm_class == PowerPCConsts.XMC_TC0 ||
-                hunk.sm_class == PowerPCConsts.XMC_UNK);
+                hunk.sm_class == PowerPCConsts.XMC_UNK0 |
+                hunk.sm_class == PowerPCConsts.XMC_UNK1, $"expected a valid PowerPCConsts, got {hunk.sm_class}");
 
             if (hunk.sym_type_id == 0x8000000)
             {
@@ -274,7 +275,7 @@ namespace mwobdc.Common
 
             using (var reader = new MemoryStream(objectData))
             {
-                var fileName = $"{baseFileName}.DUMP__{type}_{name}.txt";
+                var fileName = $"{baseFileName}Dir{Path.DirectorySeparatorChar}{type}_{name}.bin".Replace('<', '+').Replace('>', '+').Replace('/', '+');
 
                 if (File.Exists(fileName))
                 {
@@ -291,7 +292,7 @@ namespace mwobdc.Common
                     writer.Close();
                 }
             }
-            return DumpHunkContent($"{baseFileName}.DUMP__{type}", objectData, hunk.size, position, name);
+            return DumpHunkContent($"{baseFileName}Dir{Path.DirectorySeparatorChar}{type}", objectData, hunk.size, position, name);
         }
 
         static int DumpObjCodeHunk(Hunk type, string baseFileName, byte[] objectData, int position, nameTableEntry[] nameTable)
@@ -313,7 +314,7 @@ namespace mwobdc.Common
 
             using (var reader = new MemoryStream(objectData))
             {
-                var fileName = $"{baseFileName}.DUMP__{type}_{name}.txt";
+                var fileName = $"{baseFileName}Dir{Path.DirectorySeparatorChar}{type}_{name}.bin".Replace('<', '+').Replace('>', '+').Replace('/', '+');
 
                 if (File.Exists(fileName))
                 {
@@ -330,7 +331,7 @@ namespace mwobdc.Common
                     writer.Close();
                 }
             }
-            return DumpHunkContent($"{baseFileName}.DUMP__{type}", objectData, hunk.size, position, name);
+            return DumpHunkContent($"{baseFileName}Dir{Path.DirectorySeparatorChar}{type}", objectData, hunk.size, position, name);
         }
 
         /// <summary>
@@ -340,7 +341,7 @@ namespace mwobdc.Common
         {
             using (var reader = new MemoryStream(objectData))
             {
-                var fileName = $"{baseFileName}_{name}_Content.txt";
+                var fileName = $"{baseFileName}_Content.bin".Replace('<', '+').Replace('>', '+').Replace('/', '+');
 
                 if (File.Exists(fileName))
                 {
@@ -363,7 +364,7 @@ namespace mwobdc.Common
         {
             using (var reader = new BinaryReader(new MemoryStream(objectData)))
             {
-                var fileName = $"{baseFileName}.DUMP__HunkData.txt";
+                var fileName = $"{baseFileName}Dir{Path.DirectorySeparatorChar}HunkData.bin".Replace('<', '+').Replace('>', '+').Replace('/', '+');
 
                 if (File.Exists(fileName))
                 {
@@ -386,7 +387,7 @@ namespace mwobdc.Common
         {
             using (var reader = new MemoryStream(objectData))
             {
-                var fileName = $"{baseFileName}.DUMP__HunkStart.txt";
+                var fileName = $"{baseFileName}Dir{Path.DirectorySeparatorChar}HunkStart.bin".Replace('<', '+').Replace('>', '+').Replace('/', '+');
 
                 if (File.Exists(fileName))
                 {
@@ -410,7 +411,7 @@ namespace mwobdc.Common
         {
             using (var reader = new MemoryStream(objectData))
             {
-                var fileName = $"{baseFileName}.DUMP__HunkEnd.txt";
+                var fileName = $"{baseFileName}Dir{Path.DirectorySeparatorChar}HunkEnd.bin".Replace('<', '+').Replace('>', '+').Replace('/', '+');
 
                 if (File.Exists(fileName))
                 {
@@ -433,7 +434,7 @@ namespace mwobdc.Common
         {
             using (var reader = new BinaryReader(new MemoryStream(objectData)))
             {
-                var fileName = $"{baseFileName}.DUMP__ObjHeader.txt";
+                var fileName = $"{baseFileName}Dir{Path.DirectorySeparatorChar}ObjHeader.bin".Replace('<', '+').Replace('>', '+').Replace('/', '+');
 
                 if (File.Exists(fileName))
                 {

@@ -28,6 +28,14 @@ namespace mwobdc
             DumpObjectFile("mslstdrt.o");  //standard Mac CodeWarrior Library (renamed as it was stupidly long)
 
             DumpArchiveFile("libfl.a");
+            DumpArchiveFile("glue-noinit.a");
+            DumpArchiveFile("libdevel.a");
+
+            DumpArchiveFile("kitruntime_sta.a");
+            DumpArchiveFile("libmslcpp_4_0.a");
+            DumpArchiveFile("libpng.a");
+            DumpArchiveFile("libtermcap.a");
+            DumpArchiveFile("libz.a");
 
             Console.ReadLine();
         }
@@ -57,18 +65,35 @@ namespace mwobdc
                     {
 
                         var libFile = Utils.Read<LibFile>(file);
-                        
-                        libfiles.Add(libFile.GetFileName(file), libFile);
+
+                        var filename = libFile.GetFileName(file);
+                        if (string.IsNullOrEmpty(filename)) filename = "^noname.o";
+
+
+                        var archiveFileDir = $"{archiveFile}Dir";
+                        if (!Directory.Exists(archiveFileDir))
+                        {
+                            Directory.CreateDirectory(archiveFileDir);
+                        }
+
+                        var newpath = $"{archiveFileDir}\\{filename}";
+                        while (libfiles.ContainsKey(newpath))
+                        {
+                            filename = "^" + filename;
+                            newpath = $"{archiveFileDir}\\{filename}";
+                        }
+
+                        libfiles.Add(newpath, libFile);
                     }
 
                     //okay - could do this inline, but split out to make debugging simpler.
-                    foreach(var kvp in libfiles)
+                    foreach (var kvp in libfiles)
                     {
                         var libFile = kvp.Value;
                         var pos = C(libFile.objectstart);
                         var size = C(libFile.objectsize);
 
-                        if(File.Exists(kvp.Key))
+                        if (File.Exists(kvp.Key))
                         {
                             File.Delete(kvp.Key);
                         }
@@ -91,6 +116,12 @@ namespace mwobdc
         //dumps the contents of an individual object file
         static void DumpObjectFile(string objectFile)
         {
+            var objectFileDir = $"{Path.GetDirectoryName(objectFile)}{Path.DirectorySeparatorChar}{Path.GetFileName(objectFile)}Dir";
+            if (!Directory.Exists(objectFileDir))
+            {
+                Directory.CreateDirectory(objectFileDir);
+            }
+
             using (var fs = new FileStream(objectFile, FileMode.Open))
             {
                 using (var file = new BinaryReader(fs))
@@ -116,12 +147,21 @@ namespace mwobdc
                             Object = libFile.GetObject(file)
                         };
 
+                        var outputFilename = Path.Combine(objectFileDir, libFileEx.FileName.Replace('/', '+'));
+                        if (outputFilename.StartsWith("\\")) outputFilename = $".{outputFilename}";
+                        var dumpDir = $"{outputFilename}Dir";
+
+                        if (!Directory.Exists(dumpDir))
+                        {
+                            Directory.CreateDirectory(dumpDir);
+                        }
+
                         Console.WriteLine($"\tLibFile {i}\r\n\t\tmoddate {Utils.ToDateTime(UC(libFile.moddate))}\r\n\t\tfilename (offset) {C(libFile.filename)} : {libFileEx.FileName}\r\n\t\tfullpathname (offset) {C(libFile.fullpathname)} : {libFileEx.FullPathName}\r\n\t\tobjectstart {C(libFile.objectstart)}\r\n\t\tobjectsize {C(libFile.objectsize)}");
 
                         Console.WriteLine($"\t\t\tObjHeader\r\n\t\t\t\tmagic_word {C(libFileEx.ObjectHeader.Value.magic_word).ToString("X")}\r\n\t\t\t\t...");
 
                         //dump the objects to files... this makes working out the contents simpler
-                        Utils.DumpObject(libFileEx.FileName.Replace('/', '+') + ".DUMP.txt", libFileEx.Object);
+                        Utils.DumpObject(outputFilename + ".bin", libFileEx.Object);
 
                         //grab the name table
                         Console.WriteLine($"\t\t\t\tNameTable");
@@ -132,7 +172,7 @@ namespace mwobdc
                             Console.WriteLine($"\t\t\t\t\t{nte.offset.ToString("x")}:: {nte.name} {nte.check_sum.ToString("x")}[{valid}]");
                         }
 
-                        Utils.DumpObjectContents(libFileEx.FileName.Replace('/', '+'), libFileEx.Object, libFileEx.ObjectNameTable); //, Marshal.SizeOf(typeof(ObjHeader)));
+                        Utils.DumpObjectContents(outputFilename, libFileEx.Object, libFileEx.ObjectNameTable); //, Marshal.SizeOf(typeof(ObjHeader)));
 
                         libFiles.Add(libFileEx);
                     }

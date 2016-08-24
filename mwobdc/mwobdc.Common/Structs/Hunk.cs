@@ -120,6 +120,7 @@ namespace mwobdc.Common.Structs
         public const sbyte XMC_DS = 10;  //routine descriptor
 
         /* possible BeOS specific */
-        public const sbyte XMC_UNK = 12; //this seems to be a BeOS specific value...not in the original Spec.
+        public const sbyte XMC_UNK0 = 12; //this seems to be a BeOS specific value...not in the original Spec.
+        public const sbyte XMC_UNK1 = 13; //this seems to be a BeOS specific value...not in the original Spec.
     }
 }
