@@ -1,0 +1,1 @@
+vasm.exe -Fbin test.s -o test.bin
