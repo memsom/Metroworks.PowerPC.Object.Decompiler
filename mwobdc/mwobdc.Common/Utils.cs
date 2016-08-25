@@ -331,13 +331,13 @@ namespace mwobdc.Common
                     writer.Close();
                 }
             }
-            return DumpHunkContent($"{baseFileName}Dir{Path.DirectorySeparatorChar}{type}", objectData, hunk.size, position, name);
+            return DumpHunkContent($"{baseFileName}Dir{Path.DirectorySeparatorChar}{type}", objectData, hunk.size, position, name, true);
         }
 
         /// <summary>
         /// Dumps the raw machine code that follows the hunk header
         /// </summary>
-        static int DumpHunkContent(string baseFileName, byte[] objectData, int size, int position, string name)
+        static int DumpHunkContent(string baseFileName, byte[] objectData, int size, int position, string name, bool dumpHex = false)
         {
             using (var reader = new MemoryStream(objectData))
             {
@@ -348,6 +348,11 @@ namespace mwobdc.Common
                     File.Delete(fileName);
                 }
 
+                if (dumpHex)
+                {
+                    DumpHunkContentAsHex(fileName, objectData, size, position);
+                }
+
                 using (var writer = new BinaryWriter(File.Create(fileName)))
                 {                
                     var buffer = new byte[size];
@@ -356,8 +361,37 @@ namespace mwobdc.Common
                     writer.Write(buffer);
                     writer.Close();
                 }
+
+
             }
             return position;
+        }
+
+        /// <summary>
+        /// Threw this in to make looking at the hex simpler.
+        /// </summary>
+        static void DumpHunkContentAsHex(string fileName, byte[] objectData, int size, int position)
+        {
+            using (var reader = new MemoryStream(objectData))
+            {
+                fileName = Path.ChangeExtension(fileName, ".hex");
+                if (File.Exists(fileName))
+                {
+                    File.Delete(fileName);
+                }
+
+                using (var writer = new BinaryWriter(File.Create(fileName)))
+                {
+                    var buffer = new byte[size];
+                    reader.Seek(position, SeekOrigin.Begin);
+                    position += reader.Read(buffer, 0, size);
+
+                    foreach(var b in buffer)
+                        writer.Write($"{b.ToString("X2")} ".ToCharArray());
+
+                    writer.Close();
+                }
+            }
         }
 
         static void DumpHunkData(string baseFileName, byte[] objectData, int position)
