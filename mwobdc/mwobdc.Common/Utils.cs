@@ -1,6 +1,7 @@
 ﻿using mwobdc.Common.Structs;
 using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -125,7 +126,10 @@ namespace mwobdc.Common
             while (nextHunk != Hunk.HUNK_END)
             {
                 nextHunk = PeekHunk(objectData, position); //get the next hunk type
-                if (!ProcessHunk(nextHunk, baseFileName, objectData, nameTable, ref position))
+                //attempt to skip some padding
+                if (nextHunk == (Hunk)0)
+                    position++;
+                else if (!ProcessHunk(nextHunk, baseFileName, objectData, nameTable, ref position))
                     break;
             }
 
@@ -582,7 +586,7 @@ namespace mwobdc.Common
         static void DumpObjHeaderStruct(string fileName, ObjHeader obj)
         {
             if (File.Exists(fileName))
-            { 
+            {
                 File.Delete(fileName);
             }
 
@@ -622,7 +626,11 @@ namespace mwobdc.Common
             {
                 reader.BaseStream.Seek(position, SeekOrigin.Begin);
                 var hunkHeader = Utils.Read<ObjPeekHunk>(reader);
-                result = (Hunk)Utils.SwapInt16(hunkHeader.hunk_type);
+                var hunkValue = Utils.SwapInt16(hunkHeader.hunk_type);
+                if (hunkValue >= result.Min() && hunkValue <= result.Max())
+                    result = (Hunk)hunkValue;
+                else
+                    result = (Hunk)0;
             }
 
             return result;
@@ -731,5 +739,18 @@ namespace mwobdc.Common
         public byte highByte;
         [FieldOffset(0)]
         public Int16 value;
+    }
+
+    public static class EnumExtension
+    {
+        public static int Max(this Enum enumType)
+        {
+            return Enum.GetValues(enumType.GetType()).Cast<int>().Max();
+        }
+
+        public static int Min(this Enum enumType)
+        {
+            return Enum.GetValues(enumType.GetType()).Cast<int>().Min();
+        }
     }
 }

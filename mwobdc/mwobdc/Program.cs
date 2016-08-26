@@ -27,6 +27,8 @@ namespace mwobdc
             DumpObjectFile("test2.o"); //more extensive test (see examples for the code)
             DumpObjectFile("test3.o"); //another test, simpler than test2 (see examples for the code)
 
+            DumpObjectFile("test3main.o"); //this links to an external library (see examples for the code)
+
             DumpObjectFile("start_dyn.o"); //standard BeOS PowerPC object file
             DumpObjectFile("init_term_dyn.o"); //standard BeOS PowerPC object file
             DumpObjectFile("mslstdrt.o");  //standard Mac CodeWarrior Library (renamed as it was stupidly long)
@@ -36,7 +38,9 @@ namespace mwobdc
             DumpArchiveFile("libdevel.a");
 
             DumpArchiveFile("kitruntime_sta.a");
-            DumpArchiveFile("libmslcpp_4_0.a");
+            
+            //DumpArchiveFile("libmslcpp_4_0.a"); //there's an issue with this file, the data it unpacks is too long for a path under Windows... So I'll revise the path generation code later.
+
             DumpArchiveFile("libpng.a");
             DumpArchiveFile("libtermcap.a");
             DumpArchiveFile("libz.a");
