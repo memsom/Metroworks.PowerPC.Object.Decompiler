@@ -1,0 +1,55 @@
+
+
+======== BOWM CPP ========
+
+
+Names:
+	    1: gint
+	    2: .gint_inc
+	    3: .gint_dec
+	    4: .gint_peek
+	    5: gint_peek
+	    6: TOC
+	    7: gint_dec
+	    8: gint_inc
+
+Hunk:	Kind=HUNK_LOCAL_IDATA    Align=4  Class=TD  Name="gint"(1)  Size=4
+00000000: 00 00 00 0A                                     '....'
+
+Hunk:	Kind=HUNK_GLOBAL_CODE    Align=4  Class=PR  Name=".gint_inc"(2)  Size=16
+00000000: 80020000  lwz      r0,gint(RTOC)
+00000004: 7C001A14  add      r0,r0,r3
+00000008: 90020000  stw      r0,gint(RTOC)
+0000000C: 4E800020  blr
+XRef:	Kind=HUNK_XREF_16BIT     Offset=$00000000  Class=TD  Name="gint"(1)
+XRef:	Kind=HUNK_XREF_16BIT     Offset=$00000008  Class=TD  Name="gint"(1)
+
+Hunk:	Kind=HUNK_GLOBAL_CODE    Align=4  Class=PR  Name=".gint_dec"(3)  Size=16
+00000000: 80020000  lwz      r0,gint(RTOC)
+00000004: 7C030050  subf     r0,r3,r0
+00000008: 90020000  stw      r0,gint(RTOC)
+0000000C: 4E800020  blr
+XRef:	Kind=HUNK_XREF_16BIT     Offset=$00000000  Class=TD  Name="gint"(1)
+XRef:	Kind=HUNK_XREF_16BIT     Offset=$00000008  Class=TD  Name="gint"(1)
+
+Hunk:	Kind=HUNK_GLOBAL_CODE    Align=4  Class=PR  Name=".gint_peek"(4)  Size=8
+00000000: 80620000  lwz      r3,gint(RTOC)
+00000004: 4E800020  blr
+XRef:	Kind=HUNK_XREF_16BIT     Offset=$00000000  Class=TD  Name="gint"(1)
+
+Hunk:	Kind=HUNK_GLOBAL_IDATA   Align=4  Class=DS  Name="gint_peek"(5)  Size=8
+00000000: 00 00 00 00 00 00 00 00                         '........'
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000000  Class=PR  Name=".gint_peek"(4)
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000004  Class=TC0 Name="TOC"(6)
+
+Hunk:	Kind=HUNK_GLOBAL_IDATA   Align=4  Class=DS  Name="gint_dec"(7)  Size=8
+00000000: 00 00 00 00 00 00 00 00                         '........'
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000000  Class=PR  Name=".gint_dec"(3)
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000004  Class=TC0 Name="TOC"(6)
+
+Hunk:	Kind=HUNK_GLOBAL_IDATA   Align=4  Class=DS  Name="gint_inc"(8)  Size=8
+00000000: 00 00 00 00 00 00 00 00                         '........'
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000000  Class=PR  Name=".gint_inc"(2)
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000004  Class=TC0 Name="TOC"(6)
+
+Hunk:	Kind=HUNK_GLOBAL_IDATA   Align=4  Class=TC0 Name="TOC"(6)  Size=0

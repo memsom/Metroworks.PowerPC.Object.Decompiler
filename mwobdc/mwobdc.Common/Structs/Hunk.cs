@@ -36,6 +36,14 @@ namespace mwobdc.Common.Structs
         HUNK_FORCE_ACTIVE //457f    //Forces the linker to never dead strip out the object defined by the following hunk
     }
 
+    public static class HunkHelper
+    {
+        public static Hunk ToHunk(this short value)
+        {
+            return (Hunk)value;
+        }
+    }
+
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public struct ObjPeekHunk
     {

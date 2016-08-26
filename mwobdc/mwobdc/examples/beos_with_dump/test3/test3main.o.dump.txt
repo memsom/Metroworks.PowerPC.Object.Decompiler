@@ -1,0 +1,68 @@
+
+
+======== BOWM CPP ========
+
+
+Names:
+	    1: @2
+	    2: .main
+	    3: .gint_inc
+	    4: .gint_peek
+	    5: .gint_dec
+	    6: .printf
+	    7: @3
+	    8: main
+	    9: TOC
+
+Hunk:	Kind=HUNK_LOCAL_IDATA    Align=1  Class=RW  Name="@2"(1)  Size=7
+00000000: 25 69 20 25 69 0A 00                            '%i %i..'
+
+Hunk:	Kind=HUNK_GLOBAL_CODE    Align=4  Class=PR  Name=".main"(2)  Size=108
+00000000: 7C0802A6  mflr     r0
+00000004: BFC1FFF8  stmw     r30,-8(SP)
+00000008: 90010008  stw      r0,8(SP)
+0000000C: 9421FFC0  stwu     SP,-64(SP)
+00000010: 3860000A  li       r3,10
+00000014: 48000001  bl       .gint_inc
+00000018: 60000000  nop
+0000001C: 48000001  bl       .gint_peek
+00000020: 60000000  nop
+00000024: 7C7F1B78  mr       r31,r3
+00000028: 38600005  li       r3,5
+0000002C: 48000001  bl       .gint_dec
+00000030: 60000000  nop
+00000034: 48000001  bl       .gint_peek
+00000038: 60000000  nop
+0000003C: 7C7E1B78  mr       r30,r3
+00000040: 80620000  lwz      r3,@2(RTOC)
+00000044: 7FE4FB78  mr       r4,r31
+00000048: 7FC5F378  mr       r5,r30
+0000004C: 48000001  bl       .printf
+00000050: 60000000  nop
+00000054: 38600000  li       r3,0
+00000058: 80010048  lwz      r0,72(SP)
+0000005C: 38210040  addi     SP,SP,64
+00000060: 7C0803A6  mtlr     r0
+00000064: BBC1FFF8  lmw      r30,-8(SP)
+00000068: 4E800020  blr
+XRef:	Kind=HUNK_XREF_24BIT     Offset=$00000014  Class=PR  Name=".gint_inc"(3)
+XRef:	Kind=HUNK_XREF_24BIT     Offset=$0000001C  Class=PR  Name=".gint_peek"(4)
+XRef:	Kind=HUNK_XREF_24BIT     Offset=$0000002C  Class=PR  Name=".gint_dec"(5)
+XRef:	Kind=HUNK_XREF_24BIT     Offset=$00000034  Class=PR  Name=".gint_peek"(4)
+XRef:	Kind=HUNK_XREF_16BIT_IL  Offset=$00000040  Class=TC  Name="@2"(1)
+XRef:	Kind=HUNK_XREF_24BIT     Offset=$0000004C  Class=PR  Name=".printf"(6)
+
+Hunk:	Kind=HUNK_LOCAL_IDATA    Align=4  Class=TI  Name="@3"(7)  Size=12
+00000000: 00 00 00 00 80 00 00 6C 10 00 00 00             '.......l....'
+XRef:	Kind=HUNK_XREF_32BIT_RL  Offset=$00000000  Class=PR  Name=".main"(2)
+
+Hunk:	Kind=HUNK_GLOBAL_IDATA   Align=4  Class=DS  Name="main"(8)  Size=8
+00000000: 00 00 00 00 00 00 00 00                         '........'
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000000  Class=PR  Name=".main"(2)
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000004  Class=TC0 Name="TOC"(9)
+
+Hunk:	Kind=HUNK_LOCAL_IDATA    Align=4  Class=TC  Name="@2"(1)  Size=4
+00000000: 00 00 00 00                                     '....'
+XRef:	Kind=HUNK_XREF_32BIT     Offset=$00000000  Class=RW  Name="@2"(1)
+
+Hunk:	Kind=HUNK_GLOBAL_IDATA   Align=4  Class=TC0 Name="TOC"(9)  Size=0

@@ -23,6 +23,10 @@ namespace mwobdc
         {
             //this is still not really generic enough.
             DumpObjectFile("test.o"); //simple one function test (see examples for the code)
+
+            DumpObjectFile("test2.o"); //more extensive test (see examples for the code)
+            DumpObjectFile("test3.o"); //another test, simpler than test2 (see examples for the code)
+
             DumpObjectFile("start_dyn.o"); //standard BeOS PowerPC object file
             DumpObjectFile("init_term_dyn.o"); //standard BeOS PowerPC object file
             DumpObjectFile("mslstdrt.o");  //standard Mac CodeWarrior Library (renamed as it was stupidly long)
