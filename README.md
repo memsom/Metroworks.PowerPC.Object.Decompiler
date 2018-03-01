@@ -14,3 +14,5 @@ This is a fun little lunch time project. It's not a serious endevour. Please don
 * Handles BeOS PowerPC .a files (these are basically a bunch of object files concattenated with an ObjHeader then LibFile structs for each object and a name table tacked on tot he bottom of that header, followed by the raw Object files. The format might be aligned to 4 bytes, I've not got as far as to checkign that, but there were no docs about the code format so I had to grok the binary and work out what the structire was.
 * Creates a direcory tree for the output. This makes looking at the output less complicated.
 * Handles a lot of the edge cases with regards to naming of file contents.
+
+If you find my work useful, please consider buying me a coffee.. [![Buy me a coffee](https://www.buymeacoffee.com/assets/img/bmc-f-logo.svg)](https://buymeacoff.ee/Bxn0HAtp3)
